@@ -141,7 +141,8 @@ function renderDonations(donations) {
 }
 
 function createDonationCard(donation) {
-  const amount = Number(donation.amount).toLocaleString();
+  const val = Number(donation.amount);
+  const amount = isNaN(val) ? (donation.amount === '?' ? '?' : '0') : val.toLocaleString();
   const date = new Date(donation.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
   const isOwner = donation.senderId === 7453565354;
 
@@ -191,7 +192,11 @@ function createDonationCard(donation) {
 }
 
 function updateStats(donations) {
-  const total = donations.reduce((sum, d) => sum + Number(d.amount), 0);
+  const total = donations.reduce((sum, d) => {
+    const val = Number(d.amount);
+    return sum + (isNaN(val) ? 0 : val);
+  }, 0);
+  
   const recent = donations.filter(d => {
     const hours24 = 24 * 60 * 60 * 1000;
     return (Date.now() - new Date(d.timestamp).getTime()) < hours24;
